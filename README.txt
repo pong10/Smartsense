@@ -1,0 +1,2 @@
+Username = FuReasanDi
+Password = COpatHefuS
