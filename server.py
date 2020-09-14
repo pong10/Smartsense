@@ -82,6 +82,7 @@ def get_data():
     name = []
     temp = []
     i = 0
+    limit.read('data.ini')
     for j in limit['THRESHOLD_DATA']:
         i+=1
         name.append(j)
@@ -92,6 +93,40 @@ def get_data():
     data['threshold'] = temp
     response = jsonify(data)
     return response
+
+@app.route('/api/edit/threshold_data', methods=['POST'])
+def edit_threshold_data():
+    req_data = request.get_json()
+    print(req_data)
+    req_section_name = req_data['section_name']
+    req_section_data = req_data['section_data']
+    option = []
+    data = []
+    section = limit['THRESHOLD_DATA']
+    edit = configparser.ConfigParser()
+    for i in section:
+        option.append(i)
+        data.append(section[i])
+
+    
+    count = 0
+    for i in section:
+        if(req_section_name == i):
+            data[count] = req_section_data
+        else:
+            count += 1
+            continue
+    result = {}
+    for i in range(len(section)):
+        result[option[i]] = data[i]
+    edit['THRESHOLD_DATA'] = result
+    with open('data.ini', 'w') as configfile:
+        edit.write(configfile)
+    reply = {}
+    reply['message'] = "success"
+    response = jsonify(reply)
+    return response
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
